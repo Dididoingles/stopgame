@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+    <!-- Metatags Open Graph (miniatura em redes sociais) -->
+  <meta property="og:title" content="Stop Game" />
+  <meta property="og:description" content="Jogue Stop (Adedonha) online e teste seu vocabulário!" />
+  <meta property="og:image" content="https://dididoingles.github.io/stopgame/metatag.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:url" content="https://dididoingles.github.io/stopgame/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Metatags Twitter/X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Stop Game" />
+  <meta name="twitter:description" content="Jogue Stop (Adedonha) online e teste seu vocabulário!" />
+  <meta name="twitter:image" content="https://dididoingles.github.io/stopgame/metatag.png" />
+    <title>Sobre</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg: #0e0d0c; --bg-2: #141311;
+            --ink: #f0ece4; --ink-2: #a8a29a; --ink-3: #6b6660;
+            --line: rgba(240, 236, 228, 0.08); --line-2: rgba(240, 236, 228, 0.14);
+            --accent: #d97a4a; --accent-2: #e8a87c;
+            --serif: 'Instrument Serif', serif;
+            --sans: 'Geist', sans-serif;
+            --mono: 'Geist Mono', monospace;
+        }
+        html, body { min-height: 100%; overflow-x: hidden; }
+        body {
+            background: var(--bg); font-family: var(--sans); color: var(--ink);
+            -webkit-font-smoothing: antialiased; position: relative;
+            line-height: 1.6;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 55% 45% at 18% 5%, rgba(217, 122, 74, 0.09), transparent 60%),
+                radial-gradient(ellipse 45% 40% at 88% 95%, rgba(201, 169, 97, 0.07), transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+        body::after {
+            content: ''; position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+            opacity: 0.05; pointer-events: none; z-index: 1; mix-blend-mode: overlay;
+        }
+
+        .page {
+            position: relative; z-index: 2;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 0px 120px;
+            min-height: 100vh;
+        }
+
+        /* ========== VOLTAR ========== */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: var(--mono); font-size: 0.6rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: var(--ink-3); text-decoration: none;
+            margin-bottom: 56px;
+            transition: color 0.2s ease;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link::before { content: '←'; font-size: 0.9rem; }
+
+        /* ========== HEADER ========== */
+        .hero-section {
+            margin-bottom: 64px;
+            animation: fadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-kicker {
+            font-family: var(--mono); font-size: 0.58rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 4px; color: var(--accent);
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 24px;
+        }
+        .hero-kicker::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+
+        .hero-title {
+            font-family: var(--serif); font-style: italic;
+            font-size: clamp(3rem, 10vw, 5.5rem);
+            line-height: 0.95; letter-spacing: -2px;
+            margin-bottom: 28px;
+        }
+        .hero-title .accent { color: var(--accent); }
+
+        .hero-sub {
+            font-size: 1.15rem; color: var(--ink-2);
+            max-width: 900px; line-height: 1.7;
+        }
+        .hero-sub strong { color: var(--ink); font-weight: 500; }
+
+        /* ========== DIVIDER ========== */
+        .divider {
+            display: flex; align-items: center; gap: 16px;
+            margin: 64px 0;
+            opacity: 0.4;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--line-2);
+        }
+        .divider-dot {
+            width: 4px; height: 4px; border-radius: 50%;
+            background: var(--accent);
+        }
+
+        /* ========== SEÇÕES ========== */
+        .section {
+            margin-bottom: 64px;
+            animation: fadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.15s; }
+        .section:nth-child(4) { animation-delay: 0.2s; }
+
+        .section-label {
+            font-family: var(--mono); font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 3px; color: var(--ink-3);
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 24px;
+        }
+        .section-label::before {
+            content: ''; width: 14px; height: 1px; background: var(--ink-3);
+        }
+
+        .section-text {
+            font-size: 0.98rem; color: var(--ink-2);
+            line-height: 1.8;
+            max-width: 780px;
+        }
+        .section-text p + p { margin-top: 20px; }
+
+        .section-text em {
+            font-family: var(--serif); font-style: italic;
+            color: var(--accent-2); font-size: 1.05em;
+        }
+
+        .section-text strong {
+            color: var(--ink); font-weight: 600;
+        }
+
+        /* ========== MANIFESTO (frase grande) ========== */
+        .manifesto {
+            font-family: var(--serif); font-style: italic;
+            font-size: clamp(1.6rem, 4.5vw, 2.2rem);
+            line-height: 1.2; letter-spacing: -0.5px;
+            color: var(--ink);
+            margin: 8px 0 24px;
+            max-width: 780px;
+        }
+        .manifesto .accent { color: var(--accent); }
+
+        /* ========== TESTE (bloco destacado) ========== */
+        .test-block {
+            background: var(--bg-2);
+            border: 1px solid var(--line-2);
+            border-radius: 4px;
+            padding: 28px 28px 24px;
+            margin-top: 24px;
+            position: relative;
+            max-width: 780px;
+        }
+        .test-block::before {
+            content: ''; position: absolute; top: 0; left: 28px;
+            width: 60px; height: 1px; background: var(--accent);
+        }
+        .test-title {
+            font-family: var(--mono); font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 3px;
+            color: var(--accent); margin-bottom: 16px;
+        }
+        .test-list {
+            list-style: none;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .test-list li {
+            display: flex; align-items: flex-start; gap: 12px;
+            font-size: 0.88rem; color: var(--ink-2); line-height: 1.55;
+        }
+        .test-list li::before {
+            content: '—';
+            color: var(--accent);
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+
+        /* ========== TAGS / STATS ========== */
+        .stats-row {
+            display: flex; flex-wrap: wrap; gap: 12px;
+            margin-top: 8px;
+        }
+        .tag {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 18px;
+            background: var(--bg-2);
+            border: 1px solid var(--line-2);
+            border-radius: 100px;
+            font-family: var(--mono); font-size: 0.6rem; font-weight: 500;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            color: var(--ink-2);
+        }
+        .tag .tag-num {
+            font-family: var(--serif); font-style: italic;
+            font-size: 1rem; color: var(--accent);
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        /* ========== CTA ========== */
+        .cta-box {
+            background: var(--bg-2);
+            border: 1px solid var(--line-2);
+            border-radius: 4px;
+            padding: 40px 32px;
+            position: relative;
+            margin-top: 8px;
+            max-width: 780px;
+        }
+        .cta-box::before {
+            content: ''; position: absolute; top: 0; left: 32px;
+            width: 60px; height: 1px;
+            background: var(--accent);
+        }
+        .cta-title {
+            font-family: var(--serif); font-style: italic;
+            font-size: 1.7rem; margin-bottom: 12px;
+        }
+        .cta-text {
+            font-size: 0.88rem; color: var(--ink-3);
+            margin-bottom: 28px; line-height: 1.7;
+            max-width: 600px;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 16px 40px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            border-radius: 2px;
+            color: var(--accent);
+            font-family: var(--sans); font-size: 0.7rem; font-weight: 500;
+            letter-spacing: 4px; text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        /* ========== FOOTNOTE ========== */
+        .footnote {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+            z-index: 100;
+            font-family: var(--mono); font-size: 0.55rem; font-weight: 500;
+            letter-spacing: 0.5px; color: var(--ink-3);
+            text-align: center;
+            opacity: 0.6;
+            white-space: nowrap;
+        }
+        .footnote a {
+            color: var(--accent-2);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footnote a:hover { color: var(--accent); }
+
+        @media (min-width: 769px) and (max-width: 1100px) {
+            .page { padding: 80px 6vw 120px; }
+        }
+
+        @media (max-width: 768px) {
+            .page { padding: 56px 24px 100px; }
+            .hero-title { font-size: clamp(2.5rem, 12vw, 4rem); }
+            .hero-sub { font-size: 1rem; }
+            .section-text { font-size: 0.92rem; }
+            .manifesto { font-size: clamp(1.4rem, 6vw, 1.8rem); }
+            .test-block { padding: 22px 20px 18px; }
+            .test-block::before { left: 20px; }
+            .cta-box { padding: 32px 22px; }
+            .cta-box::before { left: 22px; }
+            .cta-title { font-size: 1.4rem; }
+            .footnote { font-size: 0.5rem; white-space: normal; max-width: 90vw; }
+            .stats-row { gap: 8px; }
+            .tag { padding: 10px 14px; font-size: 0.54rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <a class="back-link" href="../game/">Voltar ao jogo</a>
+
+    <!-- HERO -->
+    <section class="hero-section">
+        <div class="hero-kicker">Sobre a teacher</div>
+        <h1 class="hero-title">Diandra<span class="accent">.</span></h1>
+        <p class="hero-sub">
+            Oi! Eu sou a <strong>Diandra</strong>, mas pode me chamar de <strong>Di</strong>.
+            Sou professora de inglês independente há mais de <strong>7 anos</strong>,
+            especialista em neurolinguística e desenvolvedora de ferramentas educacionais.
+        </p>
+    </section>
+
+    <div class="divider"><span class="divider-dot"></span></div>
+
+    <!-- FILOSOFIA -->
+    <section class="section">
+        <div class="section-label">Filosofia</div>
+        <p class="manifesto">
+            O processo de aprendizagem<br>
+            <span class="accent">levado a sério.</span>
+        </p>
+        <div class="section-text">
+            <p>
+                Sou iluminista e me guio pelo método científico, e acredito na educação como ferramenta de soberania intelectual.
+                Não criamos nada no escuro. Cada decisão pedagógica é baseada em evidência,
+                teste e observação.
+            </p>
+        </div>
+    </section>
+
+    <div class="divider"><span class="divider-dot"></span></div>
+
+    <!-- MÉTODO -->
+    <section class="section">
+        <div class="section-label">O método</div>
+        <div class="section-text">
+            <p>
+                Antes de criar um plano de ensino, fazemos um <strong>teste de aptidão</strong>
+                (M-Lat adaptado) para entender que tipo de aula e intervenção faz mais sentido
+                para o aluno no momento do teste.
+            </p>
+        </div>
+
+        <div class="test-block">
+            <div class="test-title">São avaliados</div>
+            <ul class="test-list">
+                <li>A capacidade de reter um som novo apenas ouvindo</li>
+                <li>A capacidade aproximada da memória de trabalho</li>
+                <li>A capacidade de inferência lógica</li>
+                <li>O controle inibitório aproximado</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="divider"><span class="divider-dot"></span></div>
+
+    <!-- NÚMEROS -->
+    <section class="section">
+        <div class="section-label">Em números</div>
+        <div class="stats-row">
+            <span class="tag"><span class="tag-num">+2000</span> alunos pelo mundo</span>
+            <span class="tag"><span class="tag-num">+7</span> anos ensinando</span>
+            <span class="tag"><span class="tag-num">dezenas</span> de ferramentas criadas</span>
+            <span class="tag"><span class="tag-num">∞</span> histórias</span>
+        </div>
+    </section>
+
+    <div class="divider"><span class="divider-dot"></span></div>
+
+    <!-- CTA -->
+    <section class="section" style="margin-bottom: 0;">
+        <div class="cta-box">
+            <div class="cta-title">Vamos jogar?</div>
+            <p class="cta-text">
+                O <em>Stop!</em> foi criado como parte do plano de ensino da teacher Di
+                para tornar o aprendizado de inglês mais leve e divertido.
+            </p>
+            <a class="cta-button" href="../game/">Jogar Stop!</a>
+        </div>
+    </section>
+
+</div>
+
+<div class="footnote">
+    Este jogo faz parte do plano de ensino da teacher
+    <a href="https://www.instagram.com/dicarvalho.prof/" target="_blank" rel="noopener noreferrer">@dicarvalho.prof</a>
+</div>
+
+</body>
+</html>
