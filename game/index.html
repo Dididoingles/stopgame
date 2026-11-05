@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <!-- Metatags Open Graph (miniatura em redes sociais) -->
+  <meta property="og:title" content="Stop Game" />
+  <meta property="og:description" content="Jogue Stop (Adedonha) online e teste seu vocabulário!" />
+  <meta property="og:image" content="https://dididoingles.github.io/stopgame/metatag.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:url" content="https://dididoingles.github.io/stopgame/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Metatags Twitter/X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Stop Game" />
+  <meta name="twitter:description" content="Jogue Stop (Adedonha) online e teste seu vocabulário!" />
+  <meta name="twitter:image" content="https://dididoingles.github.io/stopgame/metatag.png" />
+    <title>Stopgame</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg: #0e0d0c; --bg-2: #141311;
+            --ink: #f0ece4; --ink-2: #a8a29a; --ink-3: #6b6660;
+            --line: rgba(240, 236, 228, 0.08); --line-2: rgba(240, 236, 228, 0.14);
+            --accent: #d97a4a; --accent-2: #e8a87c;
+            --serif: 'Instrument Serif', serif;
+            --sans: 'Geist', sans-serif;
+            --mono: 'Geist Mono', monospace;
+        }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            background: var(--bg); font-family: var(--sans); color: var(--ink);
+            display: flex; align-items: center; justify-content: center;
+            padding: 24px 40px; -webkit-font-smoothing: antialiased; position: relative;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 55% 45% at 18% 5%, rgba(217, 122, 74, 0.09), transparent 60%),
+                radial-gradient(ellipse 45% 40% at 88% 95%, rgba(201, 169, 97, 0.07), transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+        body::after {
+            content: ''; position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+            opacity: 0.05; pointer-events: none; z-index: 1; mix-blend-mode: overlay;
+        }
+
+        .app {
+            position: relative; z-index: 2; width: 100%; max-width: 1180px;
+            height: 94vh; max-height: 780px;
+            display: grid; grid-template-rows: auto 1fr;
+        }
+
+        .header {
+            display: grid; grid-template-columns: auto 1fr auto auto; align-items: center;
+            gap: 32px; padding: 0 4px 16px; border-bottom: 1px solid var(--line);
+        }
+        .brand { display: flex; align-items: baseline; gap: 12px; }
+        .brand-name { font-family: var(--serif); font-style: italic; font-size: 1.6rem; letter-spacing: -0.5px; line-height: 1; }
+        .brand-tag { font-family: var(--mono); font-size: 0.58rem; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; color: var(--ink-3); }
+
+        .players { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; align-items: center; }
+        .player { display: flex; align-items: center; gap: 9px; animation: fadeIn 0.5s ease backwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+        .player-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3); transition: all 0.3s; }
+        .player.is-leading .player-dot { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .player-name { font-size: 0.8rem; font-weight: 500; color: var(--ink-2); transition: color 0.3s; }
+        .player.is-leading .player-name { color: var(--ink); }
+        .player-score { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; color: var(--ink-3); font-variant-numeric: tabular-nums; transition: color 0.3s; }
+        .player.is-leading .player-score { color: var(--accent); }
+
+        .round-info { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .round-label { font-family: var(--mono); font-size: 0.55rem; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; color: var(--ink-3); }
+        .round-value { font-family: var(--serif); font-size: 1rem; line-height: 1; }
+
+        .btn-end-game {
+            padding: 8px 16px; background: transparent;
+            border: 1px solid var(--line-2); border-radius: 2px;
+            color: var(--ink-3); font-family: var(--mono); font-size: 0.6rem;
+            font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.25s ease;
+        }
+        .btn-end-game:hover { color: var(--accent); border-color: var(--accent); }
+        .btn-end-game:active { transform: scale(0.96); }
+
+        .main {
+            display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 20px;
+            min-height: 0; padding-top: 4px;
+        }
+        .col { display: flex; flex-direction: column; min-height: 0; position: relative; }
+        .col-left { padding: 8px 0 20px 4px; align-items: center; gap: 24px; }
+        .col-center { padding: 8px 20px; align-items: center; justify-content: center; gap: 40px; }
+        .col-right { padding: 8px 4px 20px 0; align-items: center; gap: 24px; }
+
+        .section-label {
+            font-family: var(--mono); font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 2.5px; color: var(--ink-3);
+            display: flex; align-items: center; gap: 10px; align-self: flex-start; padding-top: 4px;
+        }
+        .section-label::before { content: ''; width: 14px; height: 1px; background: var(--ink-3); }
+        .col-right .section-label { align-self: flex-end; }
+        .col-right .section-label::before { order: 2; }
+        .col-right .section-label::after { content: ''; width: 14px; height: 1px; background: var(--ink-3); order: 1; }
+
+        .roulette-block { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px; width: 100%; flex: 1; }
+        .roulette-stage {
+            position: relative; width: 200px; height: 200px;
+            display: flex; align-items: center; justify-content: center; margin-top: 12px;
+        }
+        .roulette-stage::before { content: ''; position: absolute; inset: -20px; border-radius: 50%; border: 1px solid var(--line); opacity: 0.5; }
+        .roulette-stage::after { content: ''; position: absolute; inset: -34px; border-radius: 50%; border: 1px solid var(--line); opacity: 0.25; }
+
+        .wheel-rotor {
+            position: absolute; inset: 0; border-radius: 50%;
+            will-change: transform; transform: rotate(0deg); z-index: 2;
+        }
+        #rouletteCanvas { width: 100%; height: 100%; border-radius: 50%; display: block; }
+
+        .pointer { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); z-index: 20; pointer-events: none; }
+        .pointer-tip {
+            width: 0; height: 0;
+            border-left: 7px solid transparent; border-right: 7px solid transparent;
+            border-top: 10px solid var(--accent);
+            filter: drop-shadow(0 0 8px rgba(217, 122, 74, 0.7));
+        }
+
+        .btn-full {
+            width: 100%; max-width: 220px; padding: 16px 22px;
+            background: transparent; border: 1px solid var(--line-2); border-radius: 2px;
+            color: var(--ink); font-family: var(--sans); font-size: 0.68rem; font-weight: 500;
+            letter-spacing: 4px; text-transform: uppercase; cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .btn-full:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+        .btn-full:active { transform: scale(0.985); }
+        .btn-full:disabled { opacity: 0.4; cursor: wait; }
+        .btn-full.danger:hover { background: #e85a4f; border-color: #e85a4f; color: #fff; }
+
+        .displays { display: flex; align-items: center; gap: 28px; justify-content: center; }
+        .display-slot { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+        .display-slot .slot-tag {
+            font-family: var(--mono); font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 2.5px; color: var(--ink-3);
+        }
+        .slot-value {
+            font-family: var(--serif); font-style: italic;
+            font-size: 2.6rem; line-height: 1; font-weight: 400;
+            letter-spacing: -1px; min-height: 2.6rem;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; text-transform: uppercase;
+            max-width: 240px; white-space: nowrap;
+        }
+        .display-slot.is-cat .slot-value { color: var(--accent-2); }
+        .display-slot.is-letter .slot-value { color: var(--ink); }
+        .slot-value.rolling { animation: rollBlur 0.09s linear infinite; }
+        @keyframes rollBlur {
+            0%   { opacity: 0.3; transform: translateY(-3px); filter: blur(0.5px); }
+            50%  { opacity: 1; transform: translateY(3px); filter: blur(0); }
+            100% { opacity: 0.3; transform: translateY(-3px); filter: blur(0.5px); }
+        }
+        .slot-divider {
+            font-family: var(--serif); font-style: italic; font-size: 2.4rem;
+            color: var(--ink-3); line-height: 1; padding-bottom: 1.6rem; opacity: 0.5;
+        }
+
+        .translation {
+            display: flex; align-items: baseline; gap: 10px; font-size: 0.9rem;
+            color: var(--ink-3); min-height: 1.6rem;
+        }
+        .translation .t-cat { color: var(--ink-2); font-weight: 500; }
+        .translation .t-conj { font-style: italic; color: var(--ink-3); }
+        .translation .t-letter { font-family: var(--serif); font-size: 1.3rem; color: var(--accent); font-style: italic; letter-spacing: -0.5px; }
+        .translation .t-empty { font-style: italic; color: var(--ink-3); font-family: var(--serif); font-size: 1.1rem; }
+        .translation::before { content: ''; display: inline-block; width: 22px; height: 1px; background: var(--line-2); margin-right: 6px; vertical-align: middle; }
+
+        .timer-block { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px; width: 100%; flex: 1; }
+        .timer-stage { position: relative; width: 170px; height: 170px; margin-top: 12px; }
+        .timer-stage svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .t-bg { fill: none; stroke: var(--line-2); stroke-width: 1; }
+        .t-fg {
+            fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round;
+            stroke-dasharray: 452; stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear, stroke 0.3s;
+            filter: drop-shadow(0 0 4px rgba(217, 122, 74, 0.5));
+        }
+        .t-fg.warning { stroke: #e85a4f; animation: timerBlink 1s ease-in-out infinite; }
+        @keyframes timerBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .timer-ticks {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--line-2) 0deg 1deg, transparent 1deg 6deg);
+            mask: radial-gradient(circle, transparent 72px, black 72px, black 79px, transparent 79px);
+            -webkit-mask: radial-gradient(circle, transparent 72px, black 72px, black 79px, transparent 79px);
+        }
+        .timer-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .timer-num { font-family: var(--serif); font-size: 3.8rem; line-height: 1; letter-spacing: -2.5px; transition: color 0.3s; }
+        .timer-num.warning { color: var(--accent); }
+        .timer-lbl { font-family: var(--mono); font-size: 0.5rem; font-weight: 500; text-transform: uppercase; letter-spacing: 3px; color: var(--ink-3); }
+
+        .mobile-draw-overlay {
+            position: fixed; inset: 0; z-index: 500;
+            background: var(--bg);
+            display: none; flex-direction: column;
+            padding: 32px 20px;
+            align-items: center; justify-content: center;
+            gap: 36px;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .mobile-draw-overlay.active { display: flex; opacity: 1; }
+        .mobile-draw-overlay::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(217, 122, 74, 0.12), transparent 60%);
+            pointer-events: none;
+        }
+
+        .md-kicker {
+            font-family: var(--mono); font-size: 0.6rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 4px; color: var(--ink-3);
+            position: relative; z-index: 2;
+        }
+
+        .md-display {
+            display: flex; align-items: center; justify-content: center;
+            gap: 14px; position: relative; z-index: 2;
+            width: 100%;
+        }
+        .md-slot { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+        .md-slot .md-tag {
+            font-family: var(--mono); font-size: 0.5rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 2.5px; color: var(--ink-3);
+        }
+        .md-value {
+            font-family: var(--serif); font-style: italic;
+            font-size: 2.6rem; line-height: 1;
+            font-weight: 400; text-transform: uppercase;
+            letter-spacing: -1px; text-align: center;
+            max-width: 150px; word-break: break-word;
+        }
+        .md-cat   { color: var(--accent-2); }
+        .md-letter{ color: var(--ink); text-shadow: 0 0 40px rgba(240, 236, 228, 0.15); }
+        .md-plus {
+            font-family: var(--serif); font-style: italic;
+            font-size: 2rem; color: var(--ink-3);
+            opacity: 0.5; padding-bottom: 1.4rem;
+        }
+
+        .md-timer { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; z-index: 2; }
+        .md-timer-num {
+            font-family: var(--serif); font-size: 4.2rem; line-height: 1;
+            letter-spacing: -3px; font-variant-numeric: lining-nums;
+            transition: color 0.3s;
+        }
+        .md-timer-num.warning { color: var(--accent); animation: timerBlink 1s ease-in-out infinite; }
+        .md-timer-lbl {
+            font-family: var(--mono); font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 3px; color: var(--ink-3);
+        }
+
+        .md-stop-btn {
+            padding: 18px 60px; background: transparent;
+            border: 1px solid var(--line-2); border-radius: 2px;
+            color: var(--ink); font-family: var(--sans);
+            font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 5px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s ease;
+            position: relative; z-index: 2;
+        }
+        .md-stop-btn:hover, .md-stop-btn:active { background: #e85a4f; border-color: #e85a4f; color: #fff; }
+
+        /* ============================================================
+           MODAL — um só tamanho para os dois
+           ============================================================ */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(14, 13, 12, 0.85);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 24px;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        /* Base — idêntico para "quem acertou" E "fim de jogo" */
+        .modal {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-2);
+            border-radius: 4px;
+            border: 1px solid var(--line-2);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            padding: 32px 28px 22px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.96) translateY(10px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+        }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal::before {
+            content: ''; position: absolute; top: 0; left: 50%;
+            transform: translateX(-50%); width: 60px; height: 1px;
+            background: var(--accent);
+        }
+
+        /* Cabeçalho — idêntico */
+        .modal-kicker {
+            font-family: var(--mono); font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 3px;
+            color: var(--accent); text-align: center;
+            margin-bottom: 8px;
+        }
+        .modal-title {
+            font-family: var(--serif); font-style: italic;
+            font-size: 1.75rem; font-weight: 400;
+            text-align: center; line-height: 1.05;
+            margin-bottom: 6px;
+        }
+        .modal-sub {
+            font-size: 0.78rem; color: var(--ink-3);
+            text-align: center; line-height: 1.4;
+            margin-bottom: 22px;
+        }
+
+        /* Lista de jogadores — usada no "quem acertou" */
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+        .modal-player {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 6px;
+            background: transparent; border: none;
+            border-bottom: 1px solid var(--line);
+            color: var(--ink); font-family: var(--sans);
+            cursor: pointer; text-align: left; width: 100%;
+            transition: background 0.15s ease;
+        }
+        .modal-player:last-child { border-bottom: none; }
+        .modal-player:active { background: rgba(217, 122, 74, 0.08); }
+        .modal-player:hover .mp-name { color: var(--accent-2); }
+        .modal-player:hover .mp-plus { border-color: var(--accent); color: var(--accent); }
+
+        .mp-num   { font-family: var(--mono); font-size: 0.6rem; color: var(--ink-3); width: 18px; font-weight: 500; flex-shrink: 0; }
+        .mp-name  { flex: 1; font-size: 0.88rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.15s; }
+        .mp-score { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-2); font-weight: 500; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+        .mp-plus  {
+            width: 22px; height: 22px; border-radius: 50%;
+            border: 1px solid var(--line-2);
+            display: grid; place-items: center;
+            color: var(--ink-3); font-size: 0.82rem;
+            margin-left: 4px; font-weight: 300; line-height: 1;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+        }
+
+        /* Fim de jogo: badge + leaderboard */
+        .champion-badge {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; padding: 8px 20px; margin: 0 auto 20px;
+            font-family: var(--mono); font-size: 0.6rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 3px;
+            color: var(--accent);
+            border: 1px solid rgba(217, 122, 74, 0.3);
+            border-radius: 100px;
+            background: rgba(217, 122, 74, 0.06);
+            width: fit-content;
+        }
+        .champion-badge::before, .champion-badge::after {
+            content: ''; width: 20px; height: 1px; background: var(--accent);
+        }
+
+        .leaderboard {
+            display: flex; flex-direction: column; gap: 6px;
+            margin-bottom: 20px;
+        }
+        .lb-row {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 16px; border-radius: 2px;
+            background: rgba(240, 236, 228, 0.02);
+            border: 1px solid transparent;
+        }
+        .lb-row.champion {
+            background: rgba(217, 122, 74, 0.08);
+            border-color: rgba(217, 122, 74, 0.3);
+        }
+        .lb-rank  { font-family: var(--serif); font-style: italic; font-size: 1.4rem; color: var(--ink-3); width: 30px; text-align: center; flex-shrink: 0; }
+        .lb-row.champion .lb-rank { color: var(--accent); }
+        .lb-name  { flex: 1; font-size: 0.98rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lb-row.champion .lb-name { color: var(--ink); font-weight: 600; }
+        .lb-score { font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+        .lb-row.champion .lb-score { color: var(--accent); }
+
+        /* Rodapé / botões — idêntico */
+        .modal-footer {
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .btn-modal-action,
+        .modal-close {
+            width: 100%; padding: 14px;
+            background: transparent; border: 1px solid var(--line-2);
+            border-radius: 2px;
+            color: var(--ink);
+            font-family: var(--sans); font-size: 0.66rem; font-weight: 500;
+            letter-spacing: 3px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-modal-action:hover,
+        .modal-close:hover {
+            background: var(--accent); border-color: var(--accent); color: var(--bg);
+        }
+        .btn-modal-action.secondary,
+        .modal-close.secondary {
+            color: var(--ink-3); font-family: var(--mono);
+            font-size: 0.6rem; letter-spacing: 2.5px;
+        }
+        .btn-modal-action.secondary:hover,
+        .modal-close.secondary:hover {
+            background: transparent; border-color: var(--ink-3); color: var(--ink);
+        }
+
+        .mobile-only { display: none !important; }
+        .desktop-only { display: flex; }
+
+        /* ========== SETUP SCREEN ========== */
+        .setup {
+            position: fixed; inset: 0; z-index: 400;
+            display: flex; align-items: center; justify-content: center;
+            padding: 40px 24px;
+            overflow-y: auto;
+            background: var(--bg);
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        .setup.hidden {
+            opacity: 0; visibility: hidden; pointer-events: none;
+        }
+        .setup::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(217, 122, 74, 0.12), transparent 60%);
+            pointer-events: none;
+        }
+        .setup-inner {
+            position: relative; z-index: 2;
+            width: 100%; max-width: 560px;
+            display: flex; flex-direction: column; align-items: flex-start;
+            gap: 24px;
+            animation: setupIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes setupIn {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .setup-kicker {
+            font-family: var(--mono); font-size: 0.6rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 4px; color: var(--ink-3);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .setup-kicker::before { content: ''; width: 24px; height: 1px; background: var(--line-2); }
+        .setup-title {
+            font-family: var(--serif); font-style: italic;
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            line-height: 0.95; letter-spacing: -2px;
+        }
+        .setup-title .accent { color: var(--accent); }
+        .setup-card {
+            width: 100%;
+            background: var(--bg-2);
+            border: 1px solid var(--line-2);
+            border-radius: 4px;
+            padding: 32px 28px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+        .setup-card::before {
+            content: ''; position: absolute; top: 0; left: 28px;
+            width: 60px; height: 1px; background: var(--accent);
+        }
+        .setup-card-title {
+            font-family: var(--mono); font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 3px;
+            color: var(--ink-3); margin-bottom: 20px;
+        }
+        .player-count-row {
+            display: flex; align-items: center;
+            gap: 16px; margin-bottom: 24px;
+        }
+        .pc-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 1px solid var(--line-2); background: transparent;
+            color: var(--ink); font-size: 1.2rem; font-weight: 300;
+            cursor: pointer; transition: all 0.2s ease;
+            display: grid; place-items: center; line-height: 1;
+        }
+        .pc-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .pc-btn:active { transform: scale(0.92); }
+        .pc-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .pc-value {
+            font-family: var(--serif); font-size: 2.4rem;
+            min-width: 50px; text-align: center; line-height: 1;
+        }
+        .names-list {
+            display: flex; flex-direction: column; gap: 2px;
+            max-height: 320px; overflow-y: auto;
+            padding-right: 4px;
+        }
+        .names-list::-webkit-scrollbar { width: 3px; }
+        .names-list::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 3px; }
+        .name-row {
+            display: flex; align-items: center; gap: 16px;
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--line);
+            animation: fadeIn 0.35s ease backwards;
+        }
+        .name-row:last-child { border-bottom: none; }
+        .name-num {
+            font-family: var(--mono); font-size: 0.68rem;
+            color: var(--ink-3); width: 22px; font-weight: 500;
+        }
+        .name-input {
+            flex: 1; background: transparent; border: none;
+            color: var(--ink); font-family: var(--sans);
+            font-size: 0.95rem; font-weight: 500;
+            padding: 4px 0; outline: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
+            user-select: text;
+        }
+        .name-input::placeholder { color: var(--ink-3); font-weight: 400; }
+        .name-input:focus { border-bottom-color: var(--accent); }
+        .setup-start {
+            width: 100%; margin-top: 24px;
+            padding: 18px 22px;
+            background: transparent; border: 1px solid var(--accent);
+            border-radius: 2px; color: var(--accent);
+            font-family: var(--sans); font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 5px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .setup-start:hover { background: var(--accent); color: var(--bg); }
+        .setup-start:active { transform: scale(0.985); }
+
+        /* ========== FOOTNOTE ========== */
+        .footnote {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+            z-index: 100;
+            font-family: var(--mono); font-size: 0.6rem; font-weight: 500;
+            letter-spacing: 0.5px; color: var(--ink-3);
+            display: flex; align-items: center; gap: 6px;
+            text-align: center;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .footnote .footnote-text {
+            display: flex; align-items: center; gap: 5px;
+            flex-wrap: wrap; justify-content: center;
+            pointer-events: auto;
+            opacity: 0.75;
+        }
+        .footnote a {
+            color: var(--accent-2);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+            position: relative;
+        }
+        .footnote a:hover { color: var(--accent); }
+
+        @media (max-width: 768px) {
+            body { padding: 0; align-items: stretch; }
+            .app {
+                max-width: 100%; height: 100vh; max-height: 100vh;
+                grid-template-rows: auto 1fr;
+            }
+
+            .mobile-only { display: flex !important; }
+            .desktop-only { display: none !important; }
+
+            .header {
+                grid-template-columns: 1fr auto auto; gap: 10px;
+                padding: 16px 20px 14px;
+                align-items: center;
+            }
+            .brand { justify-content: flex-start; }
+            .brand-name { font-size: 1.4rem; }
+            .brand-tag { font-size: 0.5rem; }
+            .players { display: none; }
+            .round-info { flex-direction: row; align-items: baseline; gap: 6px; }
+            .round-label { display: none; }
+            .round-value { font-size: 0.85rem; color: var(--ink-3); font-family: var(--mono); font-weight: 500; letter-spacing: 1px; }
+            .round-value::before { content: 'R'; margin-right: 1px; color: var(--accent); }
+            .btn-end-game {
+                padding: 7px 12px; font-size: 0.55rem;
+                letter-spacing: 1.5px;
+            }
+
+            .main {
+                grid-template-columns: 1fr;
+                gap: 0;
+                padding: 0;
+                align-items: center;
+                justify-items: center;
+            }
+            .col-center, .col-right { display: none; }
+            .col-left {
+                padding: 20px 20px 60px;
+                align-items: center;
+                justify-content: center;
+                gap: 32px;
+                width: 100%;
+                height: 100%;
+                border: none;
+            }
+            .section-label { display: none; }
+            .roulette-block {
+                gap: 48px;
+                max-width: 340px;
+                width: 100%;
+            }
+            .roulette-stage {
+                width: 280px; height: 280px;
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+            .roulette-stage::before { inset: -24px; }
+            .roulette-stage::after { inset: -40px; }
+            .pointer { top: -30px; }
+            .pointer-tip { border-left-width: 9px; border-right-width: 9px; border-top-width: 13px; }
+            .btn-full {
+                max-width: 100%; padding: 20px;
+                font-size: 0.75rem; letter-spacing: 5px;
+            }
+
+            .mobile-draw-overlay {
+                padding: 40px 20px;
+                gap: 32px;
+            }
+            .md-display { gap: 12px; }
+            .md-value { font-size: 1.9rem; max-width: 130px; }
+            .md-plus  { font-size: 1.4rem; padding-bottom: 1rem; }
+            .md-timer-num { font-size: 3.8rem; }
+            .md-stop-btn { padding: 16px 44px; font-size: 0.68rem; }
+
+            /* Overlay do modal: mais espaço no topo pra não cortar */
+            .modal-overlay {
+                padding: 48px 20px 32px;
+                align-items: flex-start;
+            }
+            .modal {
+                max-width: 360px;
+                padding: 28px 22px 18px;
+            }
+            .modal-kicker { font-size: 0.5rem; margin-bottom: 6px; }
+            .modal-title { font-size: 1.45rem; margin-bottom: 4px; }
+            .modal-sub { font-size: 0.68rem; margin-bottom: 18px; }
+            .modal-body { margin-bottom: 16px; }
+            .modal-player { padding: 10px 4px; gap: 10px; }
+            .mp-num { font-size: 0.54rem; width: 16px; }
+            .mp-name { font-size: 0.8rem; }
+            .mp-score { font-size: 0.62rem; }
+            .mp-plus { width: 20px; height: 20px; font-size: 0.74rem; }
+            .modal-close, .btn-modal-action { padding: 12px; font-size: 0.6rem; }
+            .champion-badge { font-size: 0.54rem; padding: 7px 16px; margin-bottom: 16px; }
+            .lb-row { padding: 12px 13px; gap: 12px; }
+            .lb-rank { font-size: 1.2rem; width: 26px; }
+            .lb-name { font-size: 0.88rem; }
+            .lb-score { font-size: 0.82rem; }
+            .leaderboard { margin-bottom: 16px; gap: 5px; }
+
+            .setup { padding: 32px 20px 56px; }
+            .setup-inner { gap: 20px; }
+            .setup-title { font-size: clamp(2.2rem, 10vw, 3.2rem); }
+            .setup-card { padding: 24px 20px; }
+            .names-list { max-height: 40vh; }
+
+            .footnote {
+                font-size: 0.52rem;
+                white-space: normal;
+                max-width: 90vw;
+                bottom: 12px;
+            }
+        }
+
+        @media (max-width: 768px) and (max-height: 700px) {
+            .roulette-stage { width: 220px; height: 220px; margin-top: 16px; }
+            .roulette-block { gap: 32px; }
+            .md-value { font-size: 1.7rem; max-width: 120px; }
+            .md-timer-num { font-size: 3.2rem; }
+            .modal { padding: 24px 20px 16px; }
+            .modal-player { padding: 8px 4px; }
+            .lb-row { padding: 10px 12px; }
+        }
+
+        @media (max-width: 380px) {
+            .md-display { gap: 8px; }
+            .md-value { font-size: 1.6rem; max-width: 110px; }
+            .md-plus { font-size: 1.2rem; padding-bottom: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ================= SETUP SCREEN ================= -->
+<div class="setup" id="setup">
+    <div class="setup-inner">
+        <div class="setup-kicker">Configurar partida</div>
+        <h1 class="setup-title">Quem vai jogar<span class="accent">?</span></h1>
+
+        <div class="setup-card">
+            <div class="setup-card-title">Jogadores</div>
+
+            <div class="player-count-row">
+                <button class="pc-btn" id="pcMinus" aria-label="Menos jogadores">−</button>
+                <span class="pc-value" id="pcValue">3</span>
+                <button class="pc-btn" id="pcPlus" aria-label="Mais jogadores">+</button>
+            </div>
+
+            <div class="names-list" id="namesList"></div>
+
+            <button class="setup-start" id="setupStart">Iniciar partida</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= GAME APP ================= -->
+<div class="app" id="gameApp" style="display:none;">
+    <header class="header">
+        <div class="brand">
+            <span class="brand-name">Stop!</span>
+            <span class="brand-tag">game</span>
+        </div>
+        <div class="players" id="playersTrack"></div>
+        <div class="round-info">
+            <span class="round-label">Rodada</span>
+            <span class="round-value" id="roundCounter">01</span>
+        </div>
+        <button class="btn-end-game" id="btnEndGame">Fim de jogo</button>
+    </header>
+
+    <div class="main">
+        <div class="col col-left">
+            <div class="section-label">Roleta</div>
+            <div class="roulette-block">
+                <div class="roulette-stage">
+                    <div class="pointer"><div class="pointer-tip"></div></div>
+                    <div class="wheel-rotor" id="wheelRotor">
+                        <canvas id="rouletteCanvas" width="600" height="600"></canvas>
+                    </div>
+                </div>
+                <button class="btn-full" id="btnSortear">Girar</button>
+            </div>
+        </div>
+
+        <div class="col col-center desktop-only">
+            <div class="displays">
+                <div class="display-slot is-cat">
+                    <span class="slot-tag">Categoria</span>
+                    <span class="slot-value" id="categoryDisplay">—</span>
+                </div>
+                <div class="slot-divider">+</div>
+                <div class="display-slot is-letter">
+                    <span class="slot-tag">Letra</span>
+                    <span class="slot-value" id="letterDisplay">—</span>
+                </div>
+            </div>
+            <div class="translation" id="translationBox">
+                <span class="t-empty">aguardando sorteio…</span>
+            </div>
+        </div>
+
+        <div class="col col-right desktop-only">
+            <div class="section-label">Tempo</div>
+            <div class="timer-block">
+                <div class="timer-stage">
+                    <svg viewBox="0 0 160 160">
+                        <circle class="t-bg" cx="80" cy="80" r="72"/>
+                        <circle class="t-fg" id="ringProgress" cx="80" cy="80" r="72"/>
+                    </svg>
+                    <div class="timer-ticks"></div>
+                    <div class="timer-inner">
+                        <div class="timer-num" id="timerDisplay">60</div>
+                        <div class="timer-lbl">Segundos</div>
+                    </div>
+                </div>
+                <button class="btn-full danger" id="btnStop">Stop!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mobile-draw-overlay" id="mobileDrawOverlay">
+    <div class="md-kicker">Diga uma palavra com...</div>
+
+    <div class="md-display">
+        <div class="md-slot">
+            <span class="md-tag">Categoria</span>
+            <span class="md-value md-cat" id="mdCategory">—</span>
+        </div>
+        <span class="md-plus">+</span>
+        <div class="md-slot">
+            <span class="md-tag">Letra</span>
+            <span class="md-value md-letter" id="mdLetter">—</span>
+        </div>
+    </div>
+
+    <div class="md-timer">
+        <div class="md-timer-num" id="mdTimer">60</div>
+        <div class="md-timer-lbl">Segundos</div>
+    </div>
+
+    <button class="md-stop-btn" id="mdStopBtn">Stop</button>
+</div>
+
+<!-- ================= MODAL: QUEM ACERTOU ================= -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-kicker">Marcar ponto</div>
+        <h2 class="modal-title">Quem acertou?</h2>
+        <p class="modal-sub">Toque no jogador</p>
+
+        <div class="modal-body" id="modalPlayersContainer"></div>
+
+        <div class="modal-footer">
+            <button class="modal-close" id="closeModalBtn">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL: FIM DE JOGO ================= -->
+<div class="modal-overlay" id="endGameOverlay">
+    <div class="modal">
+        <div class="modal-kicker">Fim de jogo</div>
+        <h2 class="modal-title" id="endGameTitle">Placar final</h2>
+        <p class="modal-sub" id="endGameSub">Rodadas concluídas</p>
+
+        <div class="champion-badge" id="championBadge">Campeão</div>
+
+        <div class="leaderboard" id="leaderboardContainer"></div>
+
+        <div class="modal-footer">
+            <button class="btn-modal-action" id="btnNewGame">Novo jogo</button>
+            <button class="btn-modal-action secondary" id="btnCloseEndGame">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= FOOTNOTE ================= -->
+<div class="footnote">
+    <span class="footnote-text">
+        Este jogo faz parte do plano de ensino da professora<a href="https://www.instagram.com/dicarvalho.prof/" target="_blank" rel="noopener noreferrer">@dicarvalho.prof</a>|<a href="../teacherdi/" target="_blank" rel="noopener noreferrer">saiba mais</a>
+    </span>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ========== AUDIO ==========
+        const soundUrls = {
+            spin:      'https://res.cloudinary.com/dbwqwgbtx/video/upload/v1793829943/leom2024-roleta-267662_wapjdu.mp3',
+            clickGirar:'https://res.cloudinary.com/dbwqwgbtx/video/upload/v1793830082/liecio-achive-sound-132273_hs2pcu.mp3',
+            click:     'https://res.cloudinary.com/dbwqwgbtx/video/upload/v1793834548/freesound_community-camera-manual-click-39929_ebukss.mp3',
+            fimDeJogo: 'https://res.cloudinary.com/dbwqwgbtx/video/upload/v1793885071/universfield-level-up-06-370051_xrt57z.mp3',
+            roletaStop:'https://res.cloudinary.com/dbwqwgbtx/video/upload/v1793830082/liecio-achive-sound-132273_hs2pcu.mp3',
+            ticktock:  'https://res.cloudinary.com/dbwqwgbtx/video/upload/v1793885059/arunangshubanerjee-fossil-wrist-watch-ticking-studio-quality-timepiece-sound-fx-326607_tyhyay.mp3'
+        };
+
+        const audioCache = {};
+        Object.entries(soundUrls).forEach(([k, url]) => {
+            const a = new Audio(url);
+            a.preload = 'auto';
+            audioCache[k] = a;
+        });
+
+        function beep(freq, duration, type = 'sine', gain = 0.09) {
+            try {
+                const ac = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ac.createOscillator(); const g = ac.createGain();
+                osc.type = type; osc.frequency.value = freq; g.gain.value = gain;
+                osc.connect(g); g.connect(ac.destination); osc.start();
+                setTimeout(() => { try { osc.stop(); ac.close(); } catch(e){} }, duration);
+            } catch(e) {}
+        }
+
+        function playSound(key, fallback) {
+            const audio = audioCache[key];
+            if (audio) {
+                audio.currentTime = 0;
+                const p = audio.play();
+                if (p) p.catch(() => fallback && fallback());
+            } else if (fallback) {
+                fallback();
+            }
+        }
+
+        function startTickLoop() {
+            const audio = audioCache.ticktock;
+            if (!audio) return;
+            audio.loop = true;
+            audio.currentTime = 0;
+            const p = audio.play();
+            if (p) p.catch(() => {});
+        }
+        function stopTickLoop() {
+            const audio = audioCache.ticktock;
+            if (!audio) return;
+            try {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.loop = false;
+            } catch(e) {}
+        }
+
+        const sound = {
+            click:   () => playSound('click',    () => beep(800, 60,  'square')),
+            girar:   () => playSound('clickGirar', () => beep(600, 140, 'sawtooth')),
+            spin:    () => playSound('spin',     () => beep(440, 200, 'sine')),
+            roletaStop: () => playSound('roletaStop', () => beep(520, 180, 'triangle')),
+            fim:     () => playSound('fimDeJogo', () => beep(880, 300, 'triangle')),
+            tickStart: startTickLoop,
+            tickStop:  stopTickLoop
+        };
+
+        // ========== DATA ==========
+        const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        const CATEGORIES = [
+            { en: 'NAME',            pt: 'nome'              },
+            { en: 'ANIMAL',          pt: 'animal'            },
+            { en: 'FRUIT',           pt: 'fruta'             },
+            { en: 'COLOR',           pt: 'cor'               },
+            { en: 'CITY OR COUNTRY', pt: 'cidade ou país'    },
+            { en: 'OBJECT',          pt: 'objeto'            },
+            { en: 'BRAND',           pt: 'marca'             },
+            { en: 'PLANT',           pt: 'planta'            },
+            { en: 'SONG',            pt: 'música'            },
+            { en: 'MOVIE OR SERIES', pt: 'filme ou série'    }
+        ];
+        const players = [];
+
+        // ========== CONSTANTS ==========
+        const SPIN_DURATION = 3000;
+        const TIMER_MAX = 60;
+        const RING_LEN = 2 * Math.PI * 72;
+
+        // ========== DOM ==========
+        const $ = id => document.getElementById(id);
+        const canvas        = $('rouletteCanvas');
+        const ctx           = canvas.getContext('2d');
+        const wheelRotor    = $('wheelRotor');
+        const btnSortear    = $('btnSortear');
+        const btnStop       = $('btnStop');
+        const catDisplay    = $('categoryDisplay');
+        const letDisplay    = $('letterDisplay');
+        const translationT  = $('translationBox');
+        const timerNum      = $('timerDisplay');
+        const ringProgress  = $('ringProgress');
+        const playersTrack  = $('playersTrack');
+        const modalOverlay  = $('modalOverlay');
+        const modalList     = $('modalPlayersContainer');
+        const closeModalBtn = $('closeModalBtn');
+        const roundCounter  = $('roundCounter');
+        const btnEndGame    = $('btnEndGame');
+
+        const mobileDrawOverlay = $('mobileDrawOverlay');
+        const mdCategory = $('mdCategory');
+        const mdLetter   = $('mdLetter');
+        const mdTimer    = $('mdTimer');
+        const mdStopBtn  = $('mdStopBtn');
+
+        const endGameOverlay    = $('endGameOverlay');
+        const leaderboardCont   = $('leaderboardContainer');
+        const endGameTitle      = $('endGameTitle');
+        const endGameSub        = $('endGameSub');
+        const championBadge     = $('championBadge');
+        const btnNewGame        = $('btnNewGame');
+        const btnCloseEndGame   = $('btnCloseEndGame');
+
+        const setupEl      = $('setup');
+        const gameAppEl    = $('gameApp');
+        const namesListEl  = $('namesList');
+        const pcValueEl    = $('pcValue');
+        const pcMinusEl    = $('pcMinus');
+        const pcPlusEl     = $('pcPlus');
+        const setupStartEl = $('setupStart');
+
+        // ========== STATE ==========
+        let currentLetter   = 'A';
+        let currentCat      = CATEGORIES[0];
+        let isRolling       = false;
+        let timerInterval   = null;
+        let timeLeft        = 60;
+        let roundNumber     = 1;
+        let currentRotation = 0;
+        let isMobile        = window.matchMedia('(max-width: 768px)').matches;
+
+        const drawnLetters = new Set();
+
+        const MIN_PLAYERS = 2;
+        const MAX_PLAYERS = 8;
+        function defaultName(i) {
+            return `Player ${i + 1}`;
+        }
+        let setupPlayerCount = 2;
+        let setupPlayerNames = Array.from({ length: setupPlayerCount }, (_, i) => defaultName(i));
+
+        // ========== RENDER ==========
+        function renderPlayers() {
+            const maxScore = Math.max(0, ...players.map(p => p.score));
+            playersTrack.innerHTML = players.map((p, i) => {
+                const leading = p.score === maxScore && maxScore > 0;
+                return `
+                    <div class="player ${leading ? 'is-leading' : ''}" style="animation-delay:${i * 60}ms">
+                        <span class="player-dot"></span>
+                        <span class="player-name">${escapeHtml(p.name)}</span>
+                        <span class="player-score">${String(p.score).padStart(2, '0')}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderModal() {
+            modalList.innerHTML = players.map((p, i) => `
+                <button class="modal-player" data-index="${i}">
+                    <span class="mp-num">${String(i + 1).padStart(2, '0')}</span>
+                    <span class="mp-name">${escapeHtml(p.name)}</span>
+                    <span class="mp-score">${p.score} pt</span>
+                    <span class="mp-plus">+</span>
+                </button>
+            `).join('');
+            modalList.querySelectorAll('.modal-player').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = parseInt(btn.dataset.index, 10);
+                    if (!isNaN(idx) && players[idx]) {
+                        players[idx].score++;
+                        renderPlayers();
+                        sound.click();
+                        closeModal();
+                    }
+                });
+            });
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function escapeAttr(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function renderSetupInputs() {
+            const newNames = [];
+            for (let i = 0; i < setupPlayerCount; i++) {
+                newNames.push(setupPlayerNames[i] || defaultName(i));
+            }
+            setupPlayerNames = newNames;
+
+            namesListEl.innerHTML = setupPlayerNames.map((name, i) => `
+                <div class="name-row" style="animation-delay:${i * 40}ms">
+                    <span class="name-num">${String(i + 1).padStart(2, '0')}</span>
+                    <input class="name-input" type="text" maxlength="16"
+                           data-index="${i}" value="${escapeAttr(name)}"
+                           placeholder="${escapeAttr(defaultName(i))}" />
+                </div>
+            `).join('');
+
+            namesListEl.querySelectorAll('.name-input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const idx = parseInt(e.target.dataset.index, 10);
+                    setupPlayerNames[idx] = e.target.value;
+                });
+            });
+
+            pcValueEl.textContent = setupPlayerCount;
+            pcMinusEl.disabled = setupPlayerCount <= MIN_PLAYERS;
+            pcPlusEl.disabled = setupPlayerCount >= MAX_PLAYERS;
+        }
+
+        // ========== ROULETTE ==========
+        const STEP = (Math.PI * 2) / ALPHABET.length;
+        const TOP_OFFSET = -Math.PI / 2;
+
+        function drawRoulette() {
+            const W = canvas.width, H = canvas.height;
+            const cx = W / 2, cy = H / 2;
+            const radius = W / 2 - 6;
+
+            ctx.clearRect(0, 0, W, H);
+
+            for (let i = 0; i < ALPHABET.length; i++) {
+                const start = TOP_OFFSET + i * STEP;
+                const end   = TOP_OFFSET + (i + 1) * STEP;
+                const isDrawn = drawnLetters.has(ALPHABET[i]);
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, start, end);
+                ctx.closePath();
+
+                if (isDrawn) {
+                    const g = ctx.createRadialGradient(cx, cy, radius * 0.15, cx, cy, radius);
+                    g.addColorStop(0, 'rgba(217, 122, 74, 0.30)');
+                    g.addColorStop(1, 'rgba(217, 122, 74, 0.78)');
+                    ctx.fillStyle = g;
+                } else {
+                    ctx.fillStyle = i % 2 === 0 ? '#1a1815' : '#141311';
+                }
+                ctx.fill();
+
+                ctx.strokeStyle = isDrawn
+                    ? 'rgba(255, 205, 175, 0.6)'
+                    : 'rgba(240, 236, 228, 0.05)';
+                ctx.lineWidth = isDrawn ? 1.25 : 1;
+                ctx.stroke();
+            }
+
+            const letterFontSize = isMobile ? 32 : 30;
+            for (let i = 0; i < ALPHABET.length; i++) {
+                const start = TOP_OFFSET + i * STEP;
+                const end   = TOP_OFFSET + (i + 1) * STEP;
+                const midAngle = (start + end) / 2;
+                const isDrawn = drawnLetters.has(ALPHABET[i]);
+
+                const letterRadius = radius * 0.76;
+                const x = cx + Math.cos(midAngle) * letterRadius;
+                const y = cy + Math.sin(midAngle) * letterRadius;
+
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(midAngle + Math.PI / 2);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = isDrawn
+                    ? `700 ${letterFontSize}px Geist, sans-serif`
+                    : `600 ${letterFontSize}px Geist, sans-serif`;
+                ctx.fillStyle = isDrawn ? '#ffffff' : '#8a857e';
+                if (isDrawn) {
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = 4;
+                }
+                ctx.fillText(ALPHABET[i], 0, 0);
+                ctx.restore();
+            }
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius - 1, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(240, 236, 228, 0.10)';
+            ctx.lineWidth = isMobile ? 3 : 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.40, 0, Math.PI * 2);
+            ctx.fillStyle = '#0e0d0c';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(240, 236, 228, 0.12)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.36, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(240, 236, 228, 0.05)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, isMobile ? 9 : 7, 0, Math.PI * 2);
+            ctx.fillStyle = '#d97a4a';
+            ctx.fill();
+        }
+
+        // ========== SPIN ==========
+        function getTargetRotationDeg(letter) {
+            const idx = ALPHABET.indexOf(letter);
+            const stepDeg = 360 / ALPHABET.length;
+            return -(idx * stepDeg + stepDeg / 2);
+        }
+
+        function spinTo(letter) {
+            const targetDeg  = getTargetRotationDeg(letter);
+            const targetMod  = ((targetDeg % 360) + 360) % 360;
+            const currentMod = ((currentRotation % 360) + 360) % 360;
+            let delta = targetMod - currentMod;
+            if (delta < 0) delta += 360;
+
+            const extraSpins = 6 + Math.floor(Math.random() * 3);
+            const finalAngle = currentRotation + extraSpins * 360 + delta;
+
+            wheelRotor.style.transition = 'none';
+            wheelRotor.style.transform = `rotate(${currentRotation}deg)`;
+            void wheelRotor.offsetWidth;
+
+            wheelRotor.style.transition = `transform ${SPIN_DURATION}ms cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
+            wheelRotor.style.transform = `rotate(${finalAngle}deg)`;
+
+            currentRotation = finalAngle;
+
+            setTimeout(() => { wheelRotor.style.transition = 'none'; }, SPIN_DURATION + 50);
+        }
+
+        function pickUnusedLetter() {
+            const available = ALPHABET.filter(l => !drawnLetters.has(l));
+            if (available.length === 0) return null;
+            return available[Math.floor(Math.random() * available.length)];
+        }
+
+        function pickRandomLetter() {
+            return ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+        }
+
+        function pickRandomCategory() {
+            return CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+        }
+
+        function setTranslation(cat, letter) {
+            translationT.innerHTML = `
+                <span class="t-cat">${escapeHtml(cat.pt)}</span>
+                <span class="t-conj">com</span>
+                <span class="t-letter">${escapeHtml(letter)}</span>
+            `;
+        }
+        function setTranslationEmpty() {
+            translationT.innerHTML = '<span class="t-empty">aguardando sorteio…</span>';
+        }
+
+        function updateTimerUI() {
+            timerNum.textContent = timeLeft;
+            mdTimer.textContent = timeLeft;
+            const ratio = timeLeft / TIMER_MAX;
+            ringProgress.style.strokeDashoffset = RING_LEN * (1 - ratio);
+            const warn = timeLeft <= 10;
+            timerNum.classList.toggle('warning', warn);
+            mdTimer.classList.toggle('warning', warn);
+            ringProgress.classList.toggle('warning', warn);
+        }
+        function startTimer() {
+            stopTimer();
+            timeLeft = TIMER_MAX;
+            updateTimerUI();
+            sound.tickStart();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerUI();
+                if (timeLeft <= 0) stopTimer();
+            }, 1000);
+        }
+        function stopTimer() {
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            sound.tickStop();
+        }
+        function resetTimer() { stopTimer(); timeLeft = TIMER_MAX; updateTimerUI(); }
+
+        function showMobileOverlay(cat, letter) {
+            mdCategory.textContent = cat.en;
+            mdLetter.textContent = letter;
+            mdTimer.textContent = timeLeft;
+            mobileDrawOverlay.classList.add('active');
+        }
+        function hideMobileOverlay() {
+            mobileDrawOverlay.classList.remove('active');
+        }
+
+        function openModal() {
+            renderModal();
+            modalOverlay.classList.add('active');
+            sound.click();
+        }
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            resetTimer();
+            setTranslationEmpty();
+            hideMobileOverlay();
+        }
+
+        function openEndGame() {
+            const sorted = [...players].sort((a, b) => b.score - a.score);
+            const topScore = sorted[0]?.score || 0;
+            const champions = sorted.filter(p => p.score === topScore && topScore > 0);
+
+            endGameTitle.textContent = 'Placar final';
+            endGameSub.textContent = `Rodada ${roundNumber - 1} · ${sorted.length} jogadores`;
+
+            if (champions.length > 0) {
+                championBadge.style.display = 'flex';
+                championBadge.textContent = champions.length === 1
+                    ? `Campeão · ${champions[0].name}`
+                    : `Empate · ${champions.map(c => c.name).join(' & ')}`;
+            } else {
+                championBadge.style.display = 'none';
+            }
+
+            leaderboardCont.innerHTML = sorted.map((p, i) => {
+                const isChampion = p.score === topScore && topScore > 0;
+                const medal = i === 0 ? '1º' : i === 1 ? '2º' : i === 2 ? '3º' : `${i + 1}º`;
+                return `
+                    <div class="lb-row ${isChampion ? 'champion' : ''}">
+                        <span class="lb-rank">${medal}</span>
+                        <span class="lb-name">${escapeHtml(p.name)}</span>
+                        <span class="lb-score">${p.score} pt</span>
+                    </div>
+                `;
+            }).join('');
+
+            endGameOverlay.classList.add('active');
+            sound.fim();
+        }
+        function closeEndGame() { endGameOverlay.classList.remove('active'); }
+
+        function newGame() {
+            players.forEach(p => p.score = 0);
+            renderPlayers();
+            drawnLetters.clear();
+            roundNumber = 1;
+            roundCounter.textContent = '01';
+            currentRotation = 0;
+            wheelRotor.style.transition = 'none';
+            wheelRotor.style.transform = 'rotate(0deg)';
+            void wheelRotor.offsetWidth;
+            drawRoulette();
+            setTranslationEmpty();
+            catDisplay.textContent = '—';
+            letDisplay.textContent = '—';
+            mdCategory.textContent = '—';
+            mdLetter.textContent = '—';
+            resetTimer();
+            closeEndGame();
+            hideMobileOverlay();
+            sound.click();
+        }
+
+        function sortear() {
+            if (isRolling) return;
+
+            const finalLetter = pickUnusedLetter();
+            if (!finalLetter) return;
+
+            isRolling = true;
+            btnSortear.disabled = true;
+
+            sound.girar();
+            sound.spin();
+
+            resetTimer();
+            setTranslationEmpty();
+
+            const finalCat = pickRandomCategory();
+
+            spinTo(finalLetter);
+
+            catDisplay.classList.add('rolling');
+            letDisplay.classList.add('rolling');
+            mdCategory.classList.add('rolling');
+            mdLetter.classList.add('rolling');
+
+            let flickerCount = 0;
+            const flickerMs = 65;
+            const flicker = setInterval(() => {
+                const rl = pickRandomLetter();
+                const rc = pickRandomCategory();
+                letDisplay.textContent = rl;
+                catDisplay.textContent = rc.en;
+                mdLetter.textContent = rl;
+                mdCategory.textContent = rc.en;
+                flickerCount++;
+
+                if (flickerCount >= SPIN_DURATION / flickerMs) clearInterval(flicker);
+            }, flickerMs);
+
+            setTimeout(() => {
+                clearInterval(flicker);
+
+                currentLetter = finalLetter;
+                currentCat    = finalCat;
+
+                drawnLetters.add(finalLetter);
+                drawRoulette();
+
+                letDisplay.textContent = currentLetter;
+                catDisplay.textContent = currentCat.en;
+                mdLetter.textContent = currentLetter;
+                mdCategory.textContent = currentCat.en;
+
+                catDisplay.classList.remove('rolling');
+                letDisplay.classList.remove('rolling');
+                mdCategory.classList.remove('rolling');
+                mdLetter.classList.remove('rolling');
+
+                setTranslation(currentCat, currentLetter);
+
+                sound.roletaStop();
+
+                isRolling = false;
+                btnSortear.disabled = false;
+                startTimer();
+                roundNumber++;
+                roundCounter.textContent = String(roundNumber).padStart(2, '0');
+
+                if (isMobile) {
+                    showMobileOverlay(currentCat, currentLetter);
+                    updateTimerUI();
+                }
+            }, SPIN_DURATION);
+        }
+
+        pcMinusEl.addEventListener('click', () => {
+            if (setupPlayerCount > MIN_PLAYERS) {
+                setupPlayerCount--;
+                sound.click();
+                renderSetupInputs();
+            }
+        });
+
+        pcPlusEl.addEventListener('click', () => {
+            if (setupPlayerCount < MAX_PLAYERS) {
+                setupPlayerCount++;
+                sound.click();
+                renderSetupInputs();
+            }
+        });
+
+        setupStartEl.addEventListener('click', () => {
+            sound.click();
+
+            const finalNames = setupPlayerNames.map((n, i) => {
+                const trimmed = (n || '').trim();
+                return trimmed.length > 0 ? trimmed : defaultName(i);
+            });
+
+            players.length = 0;
+            finalNames.forEach(n => players.push({ name: n, score: 0 }));
+
+            setupEl.classList.add('hidden');
+            gameAppEl.style.display = 'grid';
+
+            requestAnimationFrame(() => {
+                renderPlayers();
+                drawRoulette();
+            });
+        });
+
+        btnSortear.addEventListener('click', sortear);
+        btnStop.addEventListener('click', () => { sound.click(); stopTimer(); openModal(); });
+        mdStopBtn.addEventListener('click', () => { sound.click(); stopTimer(); openModal(); });
+        closeModalBtn.addEventListener('click', () => { sound.click(); closeModal(); });
+        modalOverlay.addEventListener('click', e => {
+            if (e.target === modalOverlay) { sound.click(); closeModal(); }
+        });
+        btnEndGame.addEventListener('click', () => { sound.click(); openEndGame(); });
+        btnCloseEndGame.addEventListener('click', () => { sound.click(); closeEndGame(); });
+        btnNewGame.addEventListener('click', newGame);
+        endGameOverlay.addEventListener('click', e => {
+            if (e.target === endGameOverlay) { sound.click(); closeEndGame(); }
+        });
+
+        window.addEventListener('resize', () => {
+            const nowMobile = window.matchMedia('(max-width: 768px)').matches;
+            if (nowMobile !== isMobile) {
+                isMobile = nowMobile;
+                if (!isMobile) hideMobileOverlay();
+                drawRoulette();
+            }
+        });
+
+        function init() {
+            renderSetupInputs();
+            updateTimerUI();
+            ringProgress.style.strokeDasharray = RING_LEN;
+            ringProgress.style.strokeDashoffset = 0;
+
+            document.addEventListener('click', function warm() {
+                try {
+                    const ac = (window.AudioContext || window.webkitAudioContext)();
+                    if (ac.state === 'suspended') ac.resume();
+                } catch(e) {}
+                document.removeEventListener('click', warm);
+            }, { once: true });
+        }
+        init();
+    })();
+</script>
+</body>
+</html>
