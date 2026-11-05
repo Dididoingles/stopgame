@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- Metatags Open Graph (miniatura em redes sociais) -->
+  <meta property="og:title" content="Stop Game" />
+  <meta property="og:description" content="Jogue Stop (Adedonha) online e teste seu vocabulário!" />
+  <meta property="og:image" content="https://dididoingles.github.io/stopgame/metatag.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:url" content="https://dididoingles.github.io/stopgame/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Metatags Twitter/X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Stop Game" />
+  <meta name="twitter:description" content="Jogue Stop (Adedonha) online e teste seu vocabulário!" />
+  <meta name="twitter:image" content="https://dididoingles.github.io/stopgame/metatag.png" />
+    <title>Stop! — Jogo de palavras</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg: #0e0d0c; --bg-2: #141311;
+            --ink: #f0ece4; --ink-2: #a8a29a; --ink-3: #6b6660;
+            --line: rgba(240, 236, 228, 0.08); --line-2: rgba(240, 236, 228, 0.14);
+            --accent: #d97a4a; --accent-2: #e8a87c;
+            --serif: 'Instrument Serif', serif;
+            --sans: 'Geist', sans-serif;
+            --mono: 'Geist Mono', monospace;
+        }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            background: var(--bg); font-family: var(--sans); color: var(--ink);
+            display: flex; align-items: center; justify-content: flex-start;
+            padding: 24px 8vw; -webkit-font-smoothing: antialiased; position: relative;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 55% 45% at 18% 5%, rgba(217, 122, 74, 0.09), transparent 60%),
+                radial-gradient(ellipse 45% 40% at 88% 95%, rgba(201, 169, 97, 0.07), transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+        body::after {
+            content: ''; position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+            opacity: 0.05; pointer-events: none; z-index: 1; mix-blend-mode: overlay;
+        }
+
+        .hero {
+            position: relative; z-index: 2;
+            max-width: 720px;
+            display: flex; flex-direction: column; align-items: flex-start;
+            gap: 28px;
+            animation: heroIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes heroIn {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-kicker {
+            font-family: var(--mono); font-size: 0.6rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 4px; color: var(--ink-3);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .hero-kicker::before {
+            content: ''; width: 24px; height: 1px; background: var(--line-2);
+        }
+
+        .hero-title {
+            font-family: var(--serif); font-style: italic;
+            font-size: clamp(5rem, 16vw, 10rem);
+            line-height: 0.85; letter-spacing: -4px;
+        }
+        .hero-title .accent { color: var(--accent); }
+
+        .hero-sub {
+            font-size: 1rem; color: var(--ink-3);
+            max-width: 440px; line-height: 1.65;
+            font-weight: 400;
+        }
+
+        .hero-start {
+            margin-top: 12px;
+            padding: 20px 56px;
+            background: transparent; border: 1px solid var(--accent);
+            border-radius: 2px; color: var(--accent);
+            font-family: var(--sans); font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 5px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .hero-start:hover { background: var(--accent); color: var(--bg); }
+        .hero-start:active { transform: scale(0.985); }
+
+        /* ========== FOOTNOTE ========== */
+        .footnote {
+            position: fixed; bottom: 24px; left: 8vw;
+            z-index: 3;
+            font-family: var(--mono); font-size: 0.65rem; font-weight: 500;
+            letter-spacing: 1px; color: var(--ink-3);
+            display: flex; align-items: center; gap: 8px;
+            animation: heroIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+        }
+        .footnote::before {
+            content: ''; width: 14px; height: 1px; background: var(--ink-3);
+            opacity: 0.6;
+        }
+        .footnote-text { opacity: 0.85; }
+        .footnote a {
+            color: var(--accent-2);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+            position: relative;
+        }
+        .footnote a::after {
+            content: ''; position: absolute; left: 0; right: 0; bottom: -2px;
+            height: 1px; background: currentColor; opacity: 0.4;
+            transition: opacity 0.2s ease;
+        }
+        .footnote a:hover { color: var(--accent); }
+        .footnote a:hover::after { opacity: 1; }
+
+        @media (max-width: 768px) {
+            body { padding: 24px 24px 88px; align-items: flex-start; padding-top: 15vh; }
+            .hero { gap: 20px; }
+            .hero-title { letter-spacing: -3px; }
+            .hero-start { width: 100%; padding: 18px 22px; }
+            .footnote {
+                left: 24px; right: 24px; bottom: 24px;
+                font-size: 0.6rem; flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="hero-kicker">Jogo de palavras</div>
+    <h1 class="hero-title">Stop<span class="accent">!</span></h1>
+    <p class="hero-sub">Sorteie uma categoria e uma letra, e seja o primeiro a gritar <em>Stop!</em>. Quem acertar mais, vence.</p>
+    <button class="hero-start" id="heroStart">Começar</button>
+</div>
+
+<div class="footnote">
+    <span class="footnote-text">
+        Este jogo faz parte do plano de ensino da teacher
+        <a href="https://www.instagram.com/dicarvalho.prof/" target="_blank" rel="noopener noreferrer">@dicarvalho.prof</a> saiba mais <a href="teacherdi" target="_blank" rel="noopener noreferrer">aqui</a>
+    </span>
+</div>
+
+<script>
+    const CLICK_SFX_URL = 'https://res.cloudinary.com/dbwqwgbtx/video/upload/v1793834548/freesound_community-camera-manual-click-39929_ebukss.mp3';
+    const clickSfx = new Audio(CLICK_SFX_URL);
+    clickSfx.preload = 'auto';
+
+    const heroStart = document.getElementById('heroStart');
+
+    heroStart.addEventListener('click', () => {
+        // Evita clique duplo durante o delay
+        if (heroStart.disabled) return;
+        heroStart.disabled = true;
+
+        const go = () => { window.location.href = 'game/'; };
+
+        // Toca o SFX e espera o suficiente pra ele começar
+        const p = clickSfx.play();
+        if (p && typeof p.then === 'function') {
+            p.then(() => setTimeout(go, 120))
+             .catch(() => setTimeout(go, 0));
+        } else {
+            setTimeout(go, 120);
+        }
+    });
+</script>
+</body>
+</html>
